@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class RecordViewController: UIViewController {
 
@@ -64,38 +65,28 @@ class RecordViewController: UIViewController {
                 showAlert("감정과 메모를 모두 입력해주세요.")
                 return
             }
-        
-
-        var entries = UserDefaultsManager.loadEntries()
         let dateToUse = isEditingEntry ? (entry?.date ?? getToday()) : getToday()
-        let newEntry = MoodEntry(date: dateToUse, mood: mood, memo: memo)
+            let newEntry = MoodEntry(date: dateToUse, mood: mood, memo: memo)
 
-        if !isEditingEntry {
-                let alreadyExists = entries.contains { $0.date == dateToUse }
-                if alreadyExists {
-                    showAlert("오늘은 이미 감정을 기록했어요!")
-                    return
+            // ✅ Firestore에 저장
+            let db = Firestore.firestore()
+            db.collection("moodEntries").addDocument(data: [
+                "date": newEntry.date,
+                "mood": newEntry.mood,
+                "memo": newEntry.memo
+            ]) { error in
+                if let error = error {
+                    self.showAlert("저장 실패: \(error.localizedDescription)")
+                } else {
+                    self.showAlert("기록이 완료되었습니다!")
+                    self.memoview.text = ""
+                    self.selectedMood = nil
+                    self.moodbtn.forEach { $0.backgroundColor = .clear }
                 }
             }
         
-        if isEditingEntry, let index = editingIndex {
-            entries[index] = newEntry
-            UserDefaultsManager.saveEntries(entries)
-            showAlert("수정이 완료되었습니다!", shouldPop: true)
-            return
-        } else {
-            entries.append(newEntry)
-            UserDefaultsManager.saveEntries(entries)
-            showAlert("기록이 완료되었습니다!")
-        }
 
-        UserDefaultsManager.saveEntries(entries)
-
-        memoview.text = ""
-        selectedMood = nil
-        for button in moodbtn {
-            button.backgroundColor = .clear
-        }
+        
     }
     
     func showAlert(_ message: String, shouldPop: Bool = false) {
