@@ -6,12 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		342099582DEF482300B085E0 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 342099572DEF482300B085E0 /* FirebaseFirestore */; };
+		3420995A2DEF482C00B085E0 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 342099592DEF482C00B085E0 /* FirebaseStorage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		34252B902DD5AEE0006EE3C8 /* MiniProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MiniProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		34252BA22DD5AEE1006EE3C8 /* Exceptions for "MiniProject" folder in "MiniProject" target */ = {
+		342099972DEF514200B085E0 /* Exceptions for "MiniProject" folder in "MiniProject" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -24,7 +29,7 @@
 		34252B922DD5AEE0006EE3C8 /* MiniProject */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				34252BA22DD5AEE1006EE3C8 /* Exceptions for "MiniProject" folder in "MiniProject" target */,
+				342099972DEF514200B085E0 /* Exceptions for "MiniProject" folder in "MiniProject" target */,
 			);
 			path = MiniProject;
 			sourceTree = "<group>";
@@ -36,16 +41,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				342099582DEF482300B085E0 /* FirebaseFirestore in Frameworks */,
+				3420995A2DEF482C00B085E0 /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		342099562DEF482300B085E0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		34252B872DD5AEE0006EE3C8 = {
 			isa = PBXGroup;
 			children = (
 				34252B922DD5AEE0006EE3C8 /* MiniProject */,
+				342099562DEF482300B085E0 /* Frameworks */,
 				34252B912DD5AEE0006EE3C8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,6 +93,8 @@
 			);
 			name = MiniProject;
 			packageProductDependencies = (
+				342099572DEF482300B085E0 /* FirebaseFirestore */,
+				342099592DEF482C00B085E0 /* FirebaseStorage */,
 			);
 			productName = MiniProject;
 			productReference = 34252B902DD5AEE0006EE3C8 /* MiniProject.app */;
@@ -107,6 +124,9 @@
 			);
 			mainGroup = 34252B872DD5AEE0006EE3C8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				342099552DEF47F700B085E0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 34252B912DD5AEE0006EE3C8 /* Products */;
 			projectDirPath = "";
@@ -333,6 +353,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		342099552DEF47F700B085E0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		342099572DEF482300B085E0 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 342099552DEF47F700B085E0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		342099592DEF482C00B085E0 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 342099552DEF47F700B085E0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 34252B882DD5AEE0006EE3C8 /* Project object */;
 }

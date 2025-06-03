@@ -1,4 +1,5 @@
 import UIKit
+import FirebaseFirestore
 
 class CalendarViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
@@ -37,13 +38,48 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        moodEntries = UserDefaultsManager.loadEntries()
-        setMonthView()
-        updateEmotionStatistics()
+        
+        fetchMoodEntriesFromFirestore()
+    }
+    
+    func fetchMoodEntriesFromFirestore() {
+        let db = Firestore.firestore()
+        db.collection("moodEntries").getDocuments { snapshot, error in
+            if let error = error {
+                print("❌ 캘린더 불러오기 실패: \(error.localizedDescription)")
+                return
+            }
+
+            guard let snapshot = snapshot else { return }
+
+            self.moodEntries = snapshot.documents.compactMap { doc in
+                let data = doc.data()
+                return MoodEntry(
+                    date: data["date"] as? String ?? "",
+                    mood: data["mood"] as? String ?? "",
+                    memo: data["memo"] as? String ?? ""
+                )
+            }
+
+            self.setMonthView()
+            self.updateEmotionStatistics()
+        }
     }
 
 
 
+    @IBAction func prevMonthTapped(_ sender: UIButton) {
+        currentDate = Calendar.current.date(byAdding: .month, value: -1, to: currentDate)!
+            setMonthView()
+            updateEmotionStatistics()
+    }
+    
+    @IBAction func nextMonthTapped(_ sender: UIButton) {
+        currentDate = Calendar.current.date(byAdding: .month, value: 1, to: currentDate)!
+            setMonthView()
+            updateEmotionStatistics()
+    }
+    
     func setupCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -124,10 +160,9 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         formatter.dateFormat = "yyyy.MM.dd"
 
         let calendar = Calendar.current
-        let currentComponents = calendar.dateComponents([.year, .month], from: Date())
+        let currentComponents = calendar.dateComponents([.year, .month], from: currentDate)
 
-        let entries = UserDefaultsManager.loadEntries()
-        let thisMonthEntries = entries.filter {
+        let thisMonthEntries = moodEntries.filter {
             guard let date = formatter.date(from: $0.date) else { return false }
             let entryComponents = calendar.dateComponents([.year, .month], from: date)
             return entryComponents.year == currentComponents.year && entryComponents.month == currentComponents.month
@@ -145,6 +180,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
 
         positiveLabel.text = "긍정 \(Int(positiveRatio * 100))%"
         negativeLabel.text = "부정 \(Int(negativeRatio * 100))%"
+
         var moodCountDict: [String: Int] = [:]
         for mood in moodList {
             moodCountDict[mood] = 0
@@ -154,13 +190,10 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             moodCountDict[entry.mood, default: 0] += 1
         }
 
-        let emojiLabels = [verygood,good,soso,verybad,bad]
-
+        let emojiLabels = [verygood, good, soso, verybad, bad]
         for (index, mood) in moodList.enumerated() {
             emojiLabels[index]?.text = "\(mood) : \(moodCountDict[mood] ?? 0)개"
         }
-
-        
     }
 
 

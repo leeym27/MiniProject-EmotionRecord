@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class LogViewController: UIViewController, UITableViewDelegate {
 
@@ -15,22 +16,38 @@ class LogViewController: UIViewController, UITableViewDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // 감정 기록 불러오기 + 정렬
-        moodEntries = UserDefaultsManager.loadEntries()
-            .sorted { (a: MoodEntry, b: MoodEntry) -> Bool in
+
+        let db = Firestore.firestore()
+        db.collection("moodEntries").getDocuments { snapshot, error in
+            if let error = error {
+                print("❌ 불러오기 실패: \(error.localizedDescription)")
+                return
+            }
+
+            guard let snapshot = snapshot else { return }
+
+            self.moodEntries = snapshot.documents.compactMap { doc in
+                let data = doc.data()
+                return MoodEntry(
+                    date: data["date"] as? String ?? "",
+                    mood: data["mood"] as? String ?? "",
+                    memo: data["memo"] as? String ?? ""
+                )
+            }.sorted { (a: MoodEntry, b: MoodEntry) -> Bool in
                 (a.dateValue ?? Date()) > (b.dateValue ?? Date())
             }
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.reloadData()
-        
+
+            self.tableView.dataSource = self
+            self.tableView.delegate = self
+            self.tableView.reloadData()
+        }
+
         if #available(iOS 15.0, *) {
             tableView.sectionHeaderTopPadding = 0
         }
-
-
     }
+
+
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerHeight: CGFloat = 40
